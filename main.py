@@ -15,11 +15,7 @@ columns = [
 if "food_log" not in st.session_state:
     st.session_state.food_log = load_food_log()
 
-<<<<<<< HEAD
-st.title("Count before you eat")
-=======
 st.title("Count before you Eat")
->>>>>>> 64076a90631c48f45e3d8780233f6bab9ca2387d
 
 # Box 1: Personal details
 with st.container(border=True):
