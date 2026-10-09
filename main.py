@@ -12,7 +12,7 @@ if "food_log" not in st.session_state:
                  "Fat", "Fibre"]
     )
 
-st.title("My Calorie Tracker")
+st.title("Count before you Eat")
 
 # Box 1: Personal details
 with st.container(border=True):
