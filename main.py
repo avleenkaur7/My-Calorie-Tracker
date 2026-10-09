@@ -3,16 +3,19 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 from charts import nutrient_chart
+from storage import load_food_log, save_food_log
+
+columns = [
+    "Date", "Food", "Quantity", "Unit",
+    "Calories", "Proteins", "Carbs", "Fat", "Fibre"
+]
 
 if "food_log" not in st.session_state:
-    st.session_state.food_log = pd.DataFrame(
-        columns=["Food", "Quantity", "Unit",
-                 "Calories", "Proteins", "Carbs",
-                 "Fat", "Fibre"]
-    )
+    st.session_state.food_log = load_food_log()
 
-st.title("My Calorie Tracker")
+st.title("Count before you eat")
 
 # Box 1: Personal details
 with st.container(border=True):
@@ -28,13 +31,8 @@ with st.container(border=True):
         st.session_state.previous_gender = gender
 
     elif st.session_state.previous_gender != gender:
-        st.session_state.food_log = pd.DataFrame(
-            columns=["Food", "Quantity", "Unit",
-                     "Calories", "Proteins", "Carbs",
-                     "Fat", "Fibre"]
-        )
+        st.session_state.food_log = pd.DataFrame(columns=columns)
 
-        st.session_state.previous_gender = gender
 
     col1, col2 = st.columns(2)
 
@@ -115,7 +113,7 @@ with st.container(border=True):
         "Fat": [4.8, 0.4, 6.9, 3.6, 3, 0.4, 3.3, 20.8],
         "Fibre": [0, 3.1, 10.6, 0, 3, 7.9, 0, 0]
     })
-
+   
 
    
     nutrient_columns = [
@@ -164,7 +162,9 @@ with st.container(border=True):
         else:
             unit = "pieces" if food in ["Egg", "Banana","Roti"] else "g"
 
+            
             new_entry = pd.DataFrame([{
+                "Date": pd.Timestamp.today().strftime("%Y-%m-%d"),
                 "Food": food,
                 "Quantity": quantity,
                 "Unit": unit,
@@ -180,7 +180,10 @@ with st.container(border=True):
                 ignore_index=True
             )
 
+            save_food_log(st.session_state.food_log)
+
             st.success(f"{food} added!")
+
           
        
     
@@ -189,7 +192,13 @@ with st.container(border=True):
     nutrient_columns = [
         "Calories", "Proteins", "Carbs", "Fat", "Fibre"
     ]
-
+    st.subheader("Your Food History")
+    
+    st.dataframe(
+        st.session_state.food_log,
+        use_container_width=True,
+        hide_index=True
+    )
     totals = st.session_state.food_log[
         nutrient_columns
     ].sum()
